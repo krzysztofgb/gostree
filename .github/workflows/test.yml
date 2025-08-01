@@ -2,7 +2,7 @@ on:
   workflow_call:
 
 jobs:
-  run-tsts:
+  run-tests:
     strategy:
       matrix:
         go-version:
