@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+        - golangci-lint run
+
+  lint-fix:
+    cmds:
+        - golangci-lint run --fix
+
+  test:
+    cmds:
+      - go test -v -race -shuffle=on ./...

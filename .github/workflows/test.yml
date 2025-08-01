@@ -17,13 +17,11 @@ jobs:
           - ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Install Tools
+        uses: jdx/mise-action@v2
+
       - name: Test
-        run: go test -race -shuffle=on -v ./...
+        run: task test

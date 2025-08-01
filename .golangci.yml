@@ -1,0 +1,35 @@
+version: "2"
+
+linters:
+  enable:
+    - bidichk
+    - dupword
+    - errcheck
+    - exhaustive
+    - exhaustruct
+    - exptostd
+    - gocheckcompilerdirectives
+    - gochecknoinits
+    - gochecknoglobals
+    - govet
+    - ineffassign
+    - misspell
+    - nlreturn
+    - paralleltest
+    - prealloc
+    - staticcheck
+    - thelper
+    - tparallel
+    - unconvert
+    - unused
+    - usestdlibvars
+    - usetesting
+
+formatters:
+  enable:
+    - gci
+    - gofumpt
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

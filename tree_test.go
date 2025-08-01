@@ -3,6 +3,8 @@ package gostree
 import "testing"
 
 func Test_foo(t *testing.T) {
+	t.Parallel()
+
 	result := foo()
 	expected := "bar"
 
