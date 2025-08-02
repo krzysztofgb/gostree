@@ -4,6 +4,7 @@ import (
 	"testing"
 	"math/rand"
 	"github.com/ajwerner/orderstat"
+	"github.com/google/btree"
 )
 
 var randGen *rand.Rand
@@ -16,6 +17,12 @@ type orderstatInt int
 
 func (a orderstatInt) Less(b orderstat.Item) bool {
 	return a < b.(orderstatInt)
+}
+
+type btreeInt int
+
+func (b btreeInt) Less(c btree.Item) bool {
+	return b < c.(btreeInt)
 }
 
 // generateRandomData creates a slice of random integers
@@ -56,6 +63,16 @@ func BenchmarkInsert(b *testing.B) {
 				tree := orderstat.NewTree()
 				for _, v := range data {
 					tree.ReplaceOrInsert(orderstatInt(v))
+				}
+			}
+		})
+
+		b.Run("google/btree/"+bm.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				tree := btree.New(2)
+				for _, v := range data {
+					tree.ReplaceOrInsert(btreeInt(v))
 				}
 			}
 		})
@@ -101,6 +118,16 @@ func BenchmarkSearch(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				for j := 0; j < 100; j++ {
 					orderstatTree.Get(orderstatInt(data[randGen.Intn(len(data))]))
+				}
+			}
+		})
+
+		b.Run("google/btree/"+bm.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				tree := btree.New(2)
+				for _, v := range data {
+					tree.Get(btreeInt(v))
 				}
 			}
 		})
@@ -196,6 +223,16 @@ func BenchmarkDelete(b *testing.B) {
 				}
 			}
 		})
+
+		b.Run("google/btree/"+bm.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				tree := btree.New(2)
+				for _, v := range data {
+					tree.Delete(btreeInt(v))
+				}
+			}
+		})
 	}
 }
 
@@ -271,17 +308,17 @@ func BenchmarkMixedOperations(b *testing.B) {
 				// Mixed operations: 20% each of insert, search, select, delete, rank
 				for j := 0; j < 100; j++ {
 					switch j % 5 {
-					case 0: // Insert
+					case 0:
 						tree.Insert(data[randGen.Intn(len(data))])
-					case 1: // Search
+					case 1:
 						tree.Search(data[randGen.Intn(len(data))])
-					case 2: // Select (k-th element)
+					case 2:
 						if tree.root.size > 0 {
 							tree.Select(randGen.Intn(tree.root.size))
 						}
-					case 3: // Delete
+					case 3:
 						tree.Delete(data[randGen.Intn(len(data))])
-					case 4: // Rank
+					case 4:
 						tree.Rank(data[randGen.Intn(len(data))])
 					}
 				}
@@ -302,18 +339,43 @@ func BenchmarkMixedOperations(b *testing.B) {
 				// Mixed operations: 20% each of insert, search, select, delete, rank
 				for j := 0; j < 100; j++ {
 					switch j % 5 {
-					case 0: // Insert
+					case 0:
 						tree.ReplaceOrInsert(orderstatInt(data[randGen.Intn(len(data))]))
-					case 1: // Search
+					case 1:
 						tree.Get(orderstatInt(data[randGen.Intn(len(data))]))
-					case 2: // Select (k-th element)
+					case 2:
 						if tree.Len() > 0 {
 							tree.Select(randGen.Intn(tree.Len()))
 						}
-					case 3: // Delete
+					case 3:
 						tree.Delete(orderstatInt(data[randGen.Intn(len(data))]))
-					case 4: // Rank
+					case 4:
 						tree.Rank(orderstatInt(data[randGen.Intn(len(data))]))
+					}
+				}
+			}
+		})
+
+		b.Run("google/btree/"+bm.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				tree := btree.New(2)
+				// Pre-populate with initial data
+				for _, v := range data[:bm.size/2] {
+					tree.ReplaceOrInsert(btreeInt(v))
+				}
+				b.StartTimer()
+
+				// Mixed operations: 33.3% each of insert, get, delete
+				for j := 0; j < 100; j++ {
+					switch j % 3 {
+					case 0:
+						tree.ReplaceOrInsert(btreeInt(data[randGen.Intn(len(data))]))
+					case 1:
+						tree.Get(btreeInt(data[randGen.Intn(len(data))]))
+					case 3:
+						tree.Delete(btreeInt(data[randGen.Intn(len(data))]))
 					}
 				}
 			}
