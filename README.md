@@ -5,7 +5,7 @@ A generic [order-statistic tree](https://en.wikipedia.org/wiki/Order_statistic_t
 ## Installation
 
 ```bash
-go get github.com/krzysztofgb/gostree@latest
+go get github.com/krzysztofgb/gostree
 ```
 
 ## Usage
