@@ -12,3 +12,7 @@ tasks:
   test:
     cmds:
       - go test -v -race -shuffle=on ./...
+
+  bench:
+    cmds:
+      - go test -v -run=^$ -bench=. -benchmem ./...

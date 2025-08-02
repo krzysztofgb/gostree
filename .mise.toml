@@ -1,4 +1,4 @@
 [tools]
-go = "1.18"
+go = "1.21"
 golangci-lint = "2.3.0"
 task = "3.44.1"
