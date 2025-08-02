@@ -11,8 +11,14 @@ tasks:
 
   test:
     cmds:
-      - go test -v -race -shuffle=on ./...
+      - go test -v -race -shuffle=on -coverprofile=coverage.out ./...
+
+  test-cov:
+    deps:
+      - test
+    cmds:
+      - go tool cover -html=coverage.out
 
   bench:
     cmds:
-      - go test -v -run=^$ -bench=. -benchmem ./...
+      - go test -v -run=^$ -timeout 2h -bench=. -benchmem -count 10 ./...

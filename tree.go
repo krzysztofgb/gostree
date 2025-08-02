@@ -23,7 +23,7 @@ type Tree[T cmp.Ordered] struct {
 	nil  *Node[T] // sentinel node
 }
 
-// NewTree creates a new order-statistic red-black tree.
+// NewTree creates a new order-statistic tree.
 func NewTree[T cmp.Ordered]() *Tree[T] {
 	t := &Tree[T]{}
 	// Create sentinel node
@@ -385,4 +385,9 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 		}
 	}
 	node.color = BLACK
+}
+
+// Size returns the number of elements in the tree.
+func (t *Tree[T]) Size() int {
+	return t.root.size
 }

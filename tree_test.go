@@ -740,6 +740,120 @@ func TestIntegration(t *testing.T) {
 	})
 }
 
+func TestSize(t *testing.T) {
+	t.Run("empty_tree", func(t *testing.T) {
+		tree := NewTree[int]()
+		if size := tree.Size(); size != 0 {
+			t.Errorf("Size() = %d, want 0 for empty tree", size)
+		}
+	})
+
+	t.Run("single_element", func(t *testing.T) {
+		tree := NewTree[int]()
+		tree.Insert(42)
+		if size := tree.Size(); size != 1 {
+			t.Errorf("Size() = %d, want 1", size)
+		}
+	})
+
+	t.Run("multiple_elements", func(t *testing.T) {
+		tree := NewTree[int]()
+		elements := []int{10, 5, 15, 3, 7, 12, 17}
+		
+		for i, v := range elements {
+			tree.Insert(v)
+			expectedSize := i + 1
+			if size := tree.Size(); size != expectedSize {
+				t.Errorf("After inserting %d elements: Size() = %d, want %d", expectedSize, size, expectedSize)
+			}
+		}
+	})
+
+	t.Run("with_duplicates", func(t *testing.T) {
+		tree := NewTree[int]()
+		elements := []int{5, 3, 7, 3, 5, 7, 3}
+		
+		for i, v := range elements {
+			tree.Insert(v)
+			expectedSize := i + 1
+			if size := tree.Size(); size != expectedSize {
+				t.Errorf("After inserting element %d: Size() = %d, want %d", v, size, expectedSize)
+			}
+		}
+	})
+
+	t.Run("after_deletions", func(t *testing.T) {
+		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17})
+		initialSize := tree.Size()
+		if initialSize != 7 {
+			t.Errorf("Initial size = %d, want 7", initialSize)
+		}
+
+		// Delete some elements
+		tree.Delete(3)
+		if size := tree.Size(); size != 6 {
+			t.Errorf("After deleting 3: Size() = %d, want 6", size)
+		}
+
+		tree.Delete(15)
+		if size := tree.Size(); size != 5 {
+			t.Errorf("After deleting 15: Size() = %d, want 5", size)
+		}
+
+		tree.Delete(7)
+		if size := tree.Size(); size != 4 {
+			t.Errorf("After deleting 7: Size() = %d, want 4", size)
+		}
+	})
+
+	t.Run("delete_non_existing", func(t *testing.T) {
+		tree := buildTree([]int{10, 5, 15})
+		originalSize := tree.Size()
+		
+		// Try to delete non-existing element
+		tree.Delete(20)
+		if size := tree.Size(); size != originalSize {
+			t.Errorf("Size after deleting non-existing element = %d, want %d", size, originalSize)
+		}
+	})
+
+	t.Run("large_tree", func(t *testing.T) {
+		tree := NewTree[int]()
+		n := 1000
+		
+		for i := 0; i < n; i++ {
+			tree.Insert(i)
+		}
+		
+		if size := tree.Size(); size != n {
+			t.Errorf("Size() = %d, want %d", size, n)
+		}
+		
+		// Delete half the elements
+		for i := 0; i < n/2; i++ {
+			tree.Delete(i)
+		}
+		
+		if size := tree.Size(); size != n/2 {
+			t.Errorf("After deleting half: Size() = %d, want %d", size, n/2)
+		}
+	})
+
+	t.Run("consistency_with_select", func(t *testing.T) {
+		tree := buildTree([]int{30, 10, 50, 20, 40, 60, 70})
+		size := tree.Size()
+		
+		// The last valid index for Select should be size-1
+		if _, ok := tree.Select(size - 1); !ok {
+			t.Errorf("Select(%d) should succeed for tree of size %d", size-1, size)
+		}
+		
+		if _, ok := tree.Select(size); ok {
+			t.Errorf("Select(%d) should fail for tree of size %d", size, size)
+		}
+	})
+}
+
 func TestEdgeCases(t *testing.T) {
 	t.Run("specific_rotation_patterns", func(t *testing.T) {
 		patterns := []struct {
