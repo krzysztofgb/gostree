@@ -52,6 +52,7 @@ func checkBlackHeight[T cmp.Ordered](t *testing.T, node, sentinel *Node[T], curr
 		} else if *blackHeight != currentBlackHeight {
 			t.Errorf("Black height violation: expected %d, got %d", *blackHeight, currentBlackHeight)
 		}
+
 		return
 	}
 
@@ -87,11 +88,16 @@ func buildTree(values []int) *Tree[int] {
 	for _, v := range values {
 		tree.Insert(v)
 	}
+
 	return tree
 }
 
 func TestNewTree(t *testing.T) {
+	t.Parallel()
+
 	t.Run("creates_valid_empty_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		if tree == nil {
 			t.Fatal("NewTree returned nil")
@@ -111,6 +117,8 @@ func TestNewTree(t *testing.T) {
 	})
 
 	t.Run("sentinel_is_self_referential", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		if tree.nil.left != tree.nil || tree.nil.right != tree.nil || tree.nil.parent != tree.nil {
 			t.Error("sentinel is not properly self-referential")
@@ -118,6 +126,8 @@ func TestNewTree(t *testing.T) {
 	})
 
 	t.Run("works_with_different_types", func(t *testing.T) {
+		t.Parallel()
+
 		intTree := NewTree[int]()
 		stringTree := NewTree[string]()
 		floatTree := NewTree[float64]()
@@ -139,6 +149,8 @@ func TestNewTree(t *testing.T) {
 	})
 
 	t.Run("multiple_trees_are_independent", func(t *testing.T) {
+		t.Parallel()
+
 		tree1 := NewTree[int]()
 		tree2 := NewTree[int]()
 
@@ -149,7 +161,11 @@ func TestNewTree(t *testing.T) {
 }
 
 func TestInsert(t *testing.T) {
+	t.Parallel()
+
 	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		tree.Insert(10)
 
@@ -162,6 +178,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("maintains_bst_property", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15})
 
 		if tree.root.key != 10 {
@@ -173,6 +191,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("updates_sizes_correctly", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 
 		tree.Insert(10)
@@ -194,6 +214,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("triggers_left_rotation", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 20, 30})
 
 		// After rotation, 20 should be root
@@ -208,6 +230,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("triggers_right_rotation", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{30, 20, 10})
 
 		// After rotation, 20 should be root
@@ -222,6 +246,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("complex_insertions_maintain_properties", func(t *testing.T) {
+		t.Parallel()
+
 		values := []int{13, 8, 17, 1, 11, 15, 25, 6, 22, 27}
 		tree := NewTree[int]()
 
@@ -238,6 +264,8 @@ func TestInsert(t *testing.T) {
 	})
 
 	t.Run("handles_duplicates", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		tree.Insert(10)
 		tree.Insert(10) // duplicate
@@ -251,7 +279,11 @@ func TestInsert(t *testing.T) {
 }
 
 func TestSearch(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		if tree.Search(10) {
 			t.Error("Search should return false for empty tree")
@@ -259,6 +291,8 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{42})
 
 		if !tree.Search(42) {
@@ -270,6 +304,8 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("multiple_elements", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{50, 30, 70, 20, 40, 60, 80})
 
 		// existing elements
@@ -290,6 +326,8 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("search_after_rotations", func(t *testing.T) {
+		t.Parallel()
+
 		// Insert values that cause rotations
 		tree := buildTree([]int{1, 2, 3, 4, 5, 6, 7})
 
@@ -302,6 +340,8 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("search_doesnt_modify_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{50, 30, 70, 20, 40})
 
 		sizeBefore := tree.root.size
@@ -317,7 +357,11 @@ func TestSearch(t *testing.T) {
 }
 
 func TestSelect(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 
 		testCases := []int{-1, 0, 1}
@@ -329,6 +373,8 @@ func TestSelect(t *testing.T) {
 	})
 
 	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{42})
 
 		val, ok := tree.Select(0)
@@ -346,6 +392,8 @@ func TestSelect(t *testing.T) {
 	})
 
 	t.Run("returns_sorted_order", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{30, 10, 50, 20, 40, 60, 70})
 
 		expected := []int{10, 20, 30, 40, 50, 60, 70}
@@ -358,6 +406,8 @@ func TestSelect(t *testing.T) {
 	})
 
 	t.Run("boundary_conditions", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{1, 2, 3, 4, 5})
 
 		// First element
@@ -383,6 +433,8 @@ func TestSelect(t *testing.T) {
 	})
 
 	t.Run("select_with_duplicates", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		for _, v := range []int{5, 3, 7, 3, 5, 7} {
 			tree.Insert(v)
@@ -400,7 +452,11 @@ func TestSelect(t *testing.T) {
 }
 
 func TestRank(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 
 		rank := tree.Rank(10)
@@ -410,6 +466,8 @@ func TestRank(t *testing.T) {
 	})
 
 	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{42})
 
 		testCases := []struct {
@@ -430,6 +488,8 @@ func TestRank(t *testing.T) {
 	})
 
 	t.Run("multiple_elements", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 20})
 
 		// Test rank of existing elements
@@ -458,6 +518,8 @@ func TestRank(t *testing.T) {
 	})
 
 	t.Run("rank_with_duplicates", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		for _, v := range []int{5, 3, 7, 3, 5, 7} {
 			tree.Insert(v)
@@ -483,6 +545,8 @@ func TestRank(t *testing.T) {
 	})
 
 	t.Run("rank_select_consistency", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{15, 6, 18, 3, 7, 17, 20, 2, 4, 13, 9})
 
 		// For each element, verify that Select(Rank(x)) returns x
@@ -500,6 +564,7 @@ func TestRank(t *testing.T) {
 			selected, ok := tree.Select(i)
 			if !ok {
 				t.Errorf("Select(%d) failed", i)
+
 				continue
 			}
 			rank := tree.Rank(selected)
@@ -511,7 +576,11 @@ func TestRank(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_tree", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 
 		if tree.Delete(10) {
@@ -520,6 +589,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{42})
 
 		if !tree.Delete(42) {
@@ -536,6 +607,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_leaf_nodes", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17})
 
 		if !tree.Delete(3) {
@@ -558,6 +631,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_node_with_one_child", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15, 12})
 
 		if !tree.Delete(15) {
@@ -573,6 +648,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_node_with_two_children", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17})
 
 		if !tree.Delete(5) {
@@ -594,6 +671,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_root", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15})
 
 		oldRootKey := tree.root.key
@@ -615,6 +694,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("complex_deletion_sequence", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{7, 3, 18, 10, 22, 8, 11, 26, 2, 6, 13})
 
 		deleteOrder := []int{6, 18, 11, 3, 10}
@@ -635,6 +716,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_all_elements", func(t *testing.T) {
+		t.Parallel()
+
 		values := []int{10, 5, 15, 3, 7, 12, 17}
 		tree := buildTree(values)
 
@@ -650,6 +733,8 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("delete_updates_order_statistics", func(t *testing.T) {
+		t.Parallel()
+
 		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17, 1, 4, 6, 8})
 
 		tree.Delete(7)
@@ -671,8 +756,144 @@ func TestDelete(t *testing.T) {
 	})
 }
 
+func TestSize(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_tree", func(t *testing.T) {
+		t.Parallel()
+
+		tree := NewTree[int]()
+		if size := tree.Size(); size != 0 {
+			t.Errorf("Size() = %d, want 0 for empty tree", size)
+		}
+	})
+
+	t.Run("single_element", func(t *testing.T) {
+		t.Parallel()
+
+		tree := NewTree[int]()
+		tree.Insert(42)
+		if size := tree.Size(); size != 1 {
+			t.Errorf("Size() = %d, want 1", size)
+		}
+	})
+
+	t.Run("multiple_elements", func(t *testing.T) {
+		t.Parallel()
+
+		tree := NewTree[int]()
+		elements := []int{10, 5, 15, 3, 7, 12, 17}
+
+		for i, v := range elements {
+			tree.Insert(v)
+			expectedSize := i + 1
+			if size := tree.Size(); size != expectedSize {
+				t.Errorf("After inserting %d elements: Size() = %d, want %d", expectedSize, size, expectedSize)
+			}
+		}
+	})
+
+	t.Run("with_duplicates", func(t *testing.T) {
+		t.Parallel()
+
+		tree := NewTree[int]()
+		elements := []int{5, 3, 7, 3, 5, 7, 3}
+
+		for i, v := range elements {
+			tree.Insert(v)
+			expectedSize := i + 1
+			if size := tree.Size(); size != expectedSize {
+				t.Errorf("After inserting element %d: Size() = %d, want %d", v, size, expectedSize)
+			}
+		}
+	})
+
+	t.Run("after_deletions", func(t *testing.T) {
+		t.Parallel()
+
+		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17})
+		initialSize := tree.Size()
+		if initialSize != 7 {
+			t.Errorf("Initial size = %d, want 7", initialSize)
+		}
+
+		// Delete some elements
+		tree.Delete(3)
+		if size := tree.Size(); size != 6 {
+			t.Errorf("After deleting 3: Size() = %d, want 6", size)
+		}
+
+		tree.Delete(15)
+		if size := tree.Size(); size != 5 {
+			t.Errorf("After deleting 15: Size() = %d, want 5", size)
+		}
+
+		tree.Delete(7)
+		if size := tree.Size(); size != 4 {
+			t.Errorf("After deleting 7: Size() = %d, want 4", size)
+		}
+	})
+
+	t.Run("delete_non_existing", func(t *testing.T) {
+		t.Parallel()
+
+		tree := buildTree([]int{10, 5, 15})
+		originalSize := tree.Size()
+
+		// Try to delete non-existing element
+		tree.Delete(20)
+		if size := tree.Size(); size != originalSize {
+			t.Errorf("Size after deleting non-existing element = %d, want %d", size, originalSize)
+		}
+	})
+
+	t.Run("large_tree", func(t *testing.T) {
+		t.Parallel()
+
+		tree := NewTree[int]()
+		n := 1000
+
+		for i := 0; i < n; i++ {
+			tree.Insert(i)
+		}
+
+		if size := tree.Size(); size != n {
+			t.Errorf("Size() = %d, want %d", size, n)
+		}
+
+		// Delete half the elements
+		for i := 0; i < n/2; i++ {
+			tree.Delete(i)
+		}
+
+		if size := tree.Size(); size != n/2 {
+			t.Errorf("After deleting half: Size() = %d, want %d", size, n/2)
+		}
+	})
+
+	t.Run("consistency_with_select", func(t *testing.T) {
+		t.Parallel()
+
+		tree := buildTree([]int{30, 10, 50, 20, 40, 60, 70})
+		size := tree.Size()
+
+		// The last valid index for Select should be size-1
+		if _, ok := tree.Select(size - 1); !ok {
+			t.Errorf("Select(%d) should succeed for tree of size %d", size-1, size)
+		}
+
+		if _, ok := tree.Select(size); ok {
+			t.Errorf("Select(%d) should fail for tree of size %d", size, size)
+		}
+	})
+}
+
 func TestIntegration(t *testing.T) {
+	t.Parallel()
+
 	t.Run("large_dataset_operations", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 		n := 1000
 
@@ -708,6 +929,8 @@ func TestIntegration(t *testing.T) {
 	})
 
 	t.Run("stress_test_all_operations", func(t *testing.T) {
+		t.Parallel()
+
 		tree := NewTree[int]()
 
 		// Insert 100 random-ish values
@@ -722,6 +945,7 @@ func TestIntegration(t *testing.T) {
 			val, ok := tree.Select(i)
 			if !ok {
 				t.Errorf("Select(%d) failed", i)
+
 				continue
 			}
 
@@ -740,122 +964,12 @@ func TestIntegration(t *testing.T) {
 	})
 }
 
-func TestSize(t *testing.T) {
-	t.Run("empty_tree", func(t *testing.T) {
-		tree := NewTree[int]()
-		if size := tree.Size(); size != 0 {
-			t.Errorf("Size() = %d, want 0 for empty tree", size)
-		}
-	})
-
-	t.Run("single_element", func(t *testing.T) {
-		tree := NewTree[int]()
-		tree.Insert(42)
-		if size := tree.Size(); size != 1 {
-			t.Errorf("Size() = %d, want 1", size)
-		}
-	})
-
-	t.Run("multiple_elements", func(t *testing.T) {
-		tree := NewTree[int]()
-		elements := []int{10, 5, 15, 3, 7, 12, 17}
-		
-		for i, v := range elements {
-			tree.Insert(v)
-			expectedSize := i + 1
-			if size := tree.Size(); size != expectedSize {
-				t.Errorf("After inserting %d elements: Size() = %d, want %d", expectedSize, size, expectedSize)
-			}
-		}
-	})
-
-	t.Run("with_duplicates", func(t *testing.T) {
-		tree := NewTree[int]()
-		elements := []int{5, 3, 7, 3, 5, 7, 3}
-		
-		for i, v := range elements {
-			tree.Insert(v)
-			expectedSize := i + 1
-			if size := tree.Size(); size != expectedSize {
-				t.Errorf("After inserting element %d: Size() = %d, want %d", v, size, expectedSize)
-			}
-		}
-	})
-
-	t.Run("after_deletions", func(t *testing.T) {
-		tree := buildTree([]int{10, 5, 15, 3, 7, 12, 17})
-		initialSize := tree.Size()
-		if initialSize != 7 {
-			t.Errorf("Initial size = %d, want 7", initialSize)
-		}
-
-		// Delete some elements
-		tree.Delete(3)
-		if size := tree.Size(); size != 6 {
-			t.Errorf("After deleting 3: Size() = %d, want 6", size)
-		}
-
-		tree.Delete(15)
-		if size := tree.Size(); size != 5 {
-			t.Errorf("After deleting 15: Size() = %d, want 5", size)
-		}
-
-		tree.Delete(7)
-		if size := tree.Size(); size != 4 {
-			t.Errorf("After deleting 7: Size() = %d, want 4", size)
-		}
-	})
-
-	t.Run("delete_non_existing", func(t *testing.T) {
-		tree := buildTree([]int{10, 5, 15})
-		originalSize := tree.Size()
-		
-		// Try to delete non-existing element
-		tree.Delete(20)
-		if size := tree.Size(); size != originalSize {
-			t.Errorf("Size after deleting non-existing element = %d, want %d", size, originalSize)
-		}
-	})
-
-	t.Run("large_tree", func(t *testing.T) {
-		tree := NewTree[int]()
-		n := 1000
-		
-		for i := 0; i < n; i++ {
-			tree.Insert(i)
-		}
-		
-		if size := tree.Size(); size != n {
-			t.Errorf("Size() = %d, want %d", size, n)
-		}
-		
-		// Delete half the elements
-		for i := 0; i < n/2; i++ {
-			tree.Delete(i)
-		}
-		
-		if size := tree.Size(); size != n/2 {
-			t.Errorf("After deleting half: Size() = %d, want %d", size, n/2)
-		}
-	})
-
-	t.Run("consistency_with_select", func(t *testing.T) {
-		tree := buildTree([]int{30, 10, 50, 20, 40, 60, 70})
-		size := tree.Size()
-		
-		// The last valid index for Select should be size-1
-		if _, ok := tree.Select(size - 1); !ok {
-			t.Errorf("Select(%d) should succeed for tree of size %d", size-1, size)
-		}
-		
-		if _, ok := tree.Select(size); ok {
-			t.Errorf("Select(%d) should fail for tree of size %d", size, size)
-		}
-	})
-}
-
 func TestEdgeCases(t *testing.T) {
+	t.Parallel()
+
 	t.Run("specific_rotation_patterns", func(t *testing.T) {
+		t.Parallel()
+
 		patterns := []struct {
 			name   string
 			values []int
@@ -867,7 +981,10 @@ func TestEdgeCases(t *testing.T) {
 		}
 
 		for _, p := range patterns {
+			p := p
 			t.Run(p.name, func(t *testing.T) {
+				t.Parallel()
+
 				tree := buildTree(p.values)
 				checkRedBlackProperties(t, tree)
 				verifySizes(t, tree.root, tree.nil)
@@ -876,9 +993,13 @@ func TestEdgeCases(t *testing.T) {
 	})
 
 	t.Run("deletion_fixup_patterns", func(t *testing.T) {
+		t.Parallel()
+
 		// Build a larger tree to exercise deletion fixup cases
-		tree := buildTree([]int{50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56, 68, 81, 93,
-			3, 9, 15, 21, 28, 34, 40, 46, 53, 59, 65, 71, 78, 84, 90, 96})
+		tree := buildTree([]int{
+			50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56, 68, 81, 93,
+			3, 9, 15, 21, 28, 34, 40, 46, 53, 59, 65, 71, 78, 84, 90, 96,
+		})
 
 		// Delete in specific order to trigger different fixup scenarios
 		deleteOrder := []int{3, 6, 9, 12, 15, 18, 21, 25}

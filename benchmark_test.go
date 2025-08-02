@@ -1,15 +1,16 @@
 package gostree
 
 import (
-	"testing"
 	"math/rand"
+	"testing"
+
 	"github.com/ajwerner/orderstat"
 	"github.com/google/btree"
 )
 
-var randGen *rand.Rand
+var randGen *rand.Rand //nolint:gochecknoglobals
 
-func init() {
+func init() { //nolint:gochecknoinits
 	randGen = rand.New(rand.NewSource(1337)) // Fixed seed for deterministic benchmarks
 }
 
@@ -31,6 +32,7 @@ func generateRandomData(n int) []int {
 	for i := 0; i < n; i++ {
 		data[i] = randGen.Intn(n * 10)
 	}
+
 	return data
 }
 

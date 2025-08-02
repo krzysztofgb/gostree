@@ -25,18 +25,26 @@ type Tree[T cmp.Ordered] struct {
 
 // NewTree creates a new order-statistic tree.
 func NewTree[T cmp.Ordered]() *Tree[T] {
-	t := &Tree[T]{}
-	// Create sentinel node
-	t.nil = &Node[T]{
-		color: BLACK,
-		size:  0,
+	t := &Tree[T]{
+		root: nil,
+		nil: &Node[T]{ // sentinel node
+			key:    *new(T),
+			left:   nil,
+			right:  nil,
+			parent: nil,
+			color:  BLACK,
+			size:   0,
+		},
 	}
+
 	// Make sentinel self-referential
 	t.nil.left = t.nil
 	t.nil.right = t.nil
 	t.nil.parent = t.nil
+
 	// Initialize root to sentinel
 	t.root = t.nil
+
 	return t
 }
 
@@ -192,6 +200,7 @@ func (t *Tree[T]) search(key T) *Node[T] {
 			current = current.right
 		}
 	}
+
 	return current
 }
 
@@ -203,6 +212,7 @@ func (t *Tree[T]) Select(k int) (T, bool) {
 	}
 
 	node := t.selectNode(t.root, k)
+
 	return node.key, true
 }
 
@@ -218,6 +228,7 @@ func (t *Tree[T]) selectNode(current *Node[T], k int) *Node[T] {
 			current = current.right
 		}
 	}
+
 	return current
 }
 
@@ -235,6 +246,7 @@ func (t *Tree[T]) Rank(key T) int {
 		} else {
 			// key == current.key
 			rank += current.left.size
+
 			break
 		}
 	}
@@ -250,6 +262,7 @@ func (t *Tree[T]) Delete(key T) bool {
 	}
 
 	t.deleteNode(nodeToDelete)
+
 	return true
 }
 
@@ -311,6 +324,7 @@ func (t *Tree[T]) minimum(node *Node[T]) *Node[T] {
 	for node.left != t.nil {
 		node = node.left
 	}
+
 	return node
 }
 
