@@ -314,21 +314,19 @@ func (t *Tree[T]) selectNode(current *Node[T], k int) *Node[T] {
 }
 
 // Rank returns the number of elements less than the given key.
+// If there are duplicates of the key, it returns the rank of the leftmost occurrence.
 func (t *Tree[T]) Rank(key T) int {
 	rank := 0
 	current := t.root
 
 	for current != t.nil {
-		if key < current.key {
+		if key <= current.key {
+			// Key is less than or equal, go left
 			current = current.left
-		} else if key > current.key {
+		} else {
+			// Key is greater, count this node and its left subtree
 			rank += current.left.size + 1
 			current = current.right
-		} else {
-			// key == current.key
-			rank += current.left.size
-
-			break
 		}
 	}
 

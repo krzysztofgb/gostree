@@ -22,3 +22,7 @@ tasks:
   bench:
     cmds:
       - go test -v -run=^$ -timeout 2h -bench=. -benchmem -count 10 ./...
+
+  fuzz:
+    cmds:
+        - go test -v -fuzz=Fuzz -fuzztime=30s ./...
