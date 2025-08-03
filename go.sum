@@ -1,5 +1,3 @@
-github.com/FX-HAO/GoOST v0.0.0-20180404084307-862e382bb391 h1:c7ME5cEigwPje2WtC7H4t1JVU0jDqSq9L8kXXRaYhmg=
-github.com/FX-HAO/GoOST v0.0.0-20180404084307-862e382bb391/go.mod h1:qhVBwW2ZmSxxRQJZBYZJyrKlqU1rsKbbwbcXlG/NXYk=
 github.com/ajwerner/orderstat v0.0.0-20200914031159-0ebfd67afbea h1:eCQW3axgFSgzerNCCUc9E3W8sHIsol3D84SoxqLtRd0=
 github.com/ajwerner/orderstat v0.0.0-20200914031159-0ebfd67afbea/go.mod h1:lBcZZIGVJZdjAenFzeOISQY+Gr2lTavurpq4QuJCdog=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
