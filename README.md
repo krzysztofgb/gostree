@@ -60,6 +60,21 @@ func (t *Tree[T]) Rank(item T) int
 func (t *Tree[T]) Size() int
 ```
 
+## Concurrency Safety
+
+**Write operations are NOT concurrent safe.**
+The following methods modify the tree structure and require external synchronization when used concurrently:
+- `Insert()`
+- `Delete()`
+
+**Read operations ARE concurrent safe.**
+Multiple goroutines can safely call these methods simultaneously without external synchronization:
+- `Select()`
+- `Rank()`
+- `Size()`
+
+If you need to use this tree in a concurrent environment with both readers and writers, you must implement your own synchronization (e.g., using `sync.RWMutex`).
+
 ## Performance
 
 ### Benchmark Results
