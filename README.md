@@ -68,7 +68,7 @@ Benchmarks were run against:
 * [ajwerner/orderstat](https://github.com/ajwerner/orderstat)
 * [google/btree](https://github.com/google/btree)
 
-Note, benchmarks for "Rank" and "Select" were omitted for `google/btree`, as they are not supported by that implementation.
+Note, benchmarks for the "Rank" and "Select" methods were omitted for `google/btree` (not supported).
 
 <details>
 
