@@ -95,28 +95,30 @@ func (t *Tree[T]) Insert(key T) {
 // There are 3 main cases (mirrored for left/right):
 //
 // Case 1: Uncle is RED
-//         G(B)                    G(R)
-//        /   \                  /   \
-//      P(R)   U(R)    =>      P(B)   U(B)
-//      /                      /
-//    N(R)                   N(R)
+//
+//	     G(B)                    G(R)
+//	    /   \                  /   \
+//	  P(R)   U(R)    =>      P(B)   U(B)
+//	  /                      /
+//	N(R)                   N(R)
 //
 // Case 2: Node is inner child (right child of left parent)
-//         G(B)                    G(B)
-//        /   \                  /   \
-//      P(R)   U(B)    =>      N(R)   U(B)
-//        \                    /
-//         N(R)              P(R)
+//
+//	   G(B)                    G(B)
+//	  /   \                  /   \
+//	P(R)   U(B)    =>      N(R)   U(B)
+//	  \                    /
+//	   N(R)              P(R)
 //
 // Case 3: Node is outer child (left child of left parent)
-//         G(B)                    P(B)
-//        /   \                  /   \
-//      P(R)   U(B)    =>      N(R)   G(R)
-//      /                              \
-//    N(R)                              U(B)
 //
-// Legend: G=Grandparent, P=Parent, N=NewNode, U=Uncle
-//         (R)=RED, (B)=BLACK
+//	     G(B)                    P(B)
+//	    /   \                  /   \
+//	  P(R)   U(B)    =>      N(R)   G(R)
+//	  /                              \
+//	N(R)                              U(B)
+//
+// Legend: G=Grandparent, P=Parent, N=NewNode, U=Uncle, (R)=RED, (B)=BLACK
 func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 	for newNode.parent.color == RED {
 		parent := newNode.parent
@@ -199,11 +201,12 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 // leftRotate performs a left rotation on the given node
 //
 // Before:         After:
-//    x              y
-//   / \            / \
-//  a   y    =>    x   c
-//     / \        / \
-//    b   c      a   b
+//
+//	  x              y
+//	 / \            / \
+//	a   y    =>    x   c
+//	   / \        / \
+//	  b   c      a   b
 //
 // Where x = node, y = rightChild
 // Parent relationships are updated accordingly
@@ -232,11 +235,12 @@ func (t *Tree[T]) leftRotate(node *Node[T]) {
 // rightRotate performs a right rotation on the given node
 //
 // Before:         After:
-//      y            x
-//     / \          / \
-//    x   c   =>   a   y
-//   / \              / \
-//  a   b            b   c
+//
+//	    y            x
+//	   / \          / \
+//	  x   c   =>   a   y
+//	 / \              / \
+//	a   b            b   c
 //
 // Where y = node, x = leftChild
 // Parent relationships are updated accordingly
@@ -387,11 +391,12 @@ func (t *Tree[T]) deleteNode(nodeToDelete *Node[T]) {
 // transplant replaces subtree rooted at nodeToReplace with subtree rooted at replacement
 //
 // Before:              After:
-//     P                   P
-//     |                   |
-//     U        =>         V
-//    / \                 / \
-//   a   b              (V's subtree)
+//
+//	  P                   P
+//	  |                   |
+//	  U        =>         V
+//	 / \                 / \
+//	a   b              (V's subtree)
 //
 // Where P = parent of U, U = nodeToReplace, V = replacement
 // This operation updates parent pointers but preserves V's children
@@ -429,37 +434,40 @@ func (t *Tree[T]) updateSizeUpward(node *Node[T]) {
 // There are 4 main cases (mirrored for left/right):
 //
 // Case 1: Sibling is RED
-//       P(B)                    S(B)
-//      /   \                  /   \
-//    N(B)   S(R)     =>     P(R)   SR(B)
-//          /   \           /   \
-//        SL(B) SR(B)     N(B)  SL(B)
+//
+//	   P(B)                    S(B)
+//	  /   \                  /   \
+//	N(B)   S(R)     =>     P(R)   SR(B)
+//	      /   \           /   \
+//	    SL(B) SR(B)     N(B)  SL(B)
 //
 // Case 2: Sibling and its children are BLACK
-//       P(?)                    P(?)
-//      /   \                  /   \
-//    N(B)   S(B)     =>     N(B)   S(R)
-//          /   \                  /   \
-//        SL(B) SR(B)            SL(B) SR(B)
+//
+//	   P(?)                    P(?)
+//	  /   \                  /   \
+//	N(B)   S(B)     =>     N(B)   S(R)
+//	      /   \                  /   \
+//	    SL(B) SR(B)            SL(B) SR(B)
 //
 // Case 3: Sibling's far child is BLACK
-//       P(?)                    P(?)
-//      /   \                  /   \
-//    N(B)   S(B)     =>     N(B)  SL(B)
-//          /   \                     \
-//        SL(R) SR(B)                  S(R)
-//                                       \
-//                                      SR(B)
+//
+//	   P(?)                    P(?)
+//	  /   \                  /   \
+//	N(B)   S(B)     =>     N(B)  SL(B)
+//	      /   \                     \
+//	    SL(R) SR(B)                  S(R)
+//	                                   \
+//	                                  SR(B)
 //
 // Case 4: Sibling's far child is RED
-//       P(?)                    S(?)
-//      /   \                  /   \
-//    N(B)   S(B)     =>     P(B)   SR(B)
-//          /   \           /   \
-//        SL(?) SR(R)     N(B)  SL(?)
 //
-// Legend: P=Parent, N=Node, S=Sibling, SL=Sibling's Left, SR=Sibling's Right
-//         (R)=RED, (B)=BLACK, (?)=Either color
+//	   P(?)                    S(?)
+//	  /   \                  /   \
+//	N(B)   S(B)     =>     P(B)   SR(B)
+//	      /   \           /   \
+//	    SL(?) SR(R)     N(B)  SL(?)
+//
+// Legend: P=Parent, N=Node, S=Sibling, SL=Sibling's Left, SR=Sibling's Right, (R)=RED, (B)=BLACK, (?)=Either color
 func (t *Tree[T]) deleteFixup(node *Node[T]) {
 	for node != t.root && node.color == BLACK {
 		if node == node.parent.left {
