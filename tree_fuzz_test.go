@@ -137,6 +137,8 @@ func FuzzTree(f *testing.F) {
 
 // verifyOrderStatisticProperties checks that size fields are correct
 func verifyOrderStatisticProperties[T cmp.Ordered](t *testing.T, tree *Tree[T], elements map[int]int) {
+	t.Helper()
+
 	totalCount := 0
 	for _, count := range elements {
 		totalCount += count
@@ -151,6 +153,8 @@ func verifyOrderStatisticProperties[T cmp.Ordered](t *testing.T, tree *Tree[T], 
 
 // verifySizeFields recursively verifies that size fields are correct
 func verifySizeFields[T cmp.Ordered](t *testing.T, tree *Tree[T], node, nil *Node[T]) int {
+	t.Helper()
+
 	if node == nil {
 		return 0
 	}
@@ -168,6 +172,8 @@ func verifySizeFields[T cmp.Ordered](t *testing.T, tree *Tree[T], node, nil *Nod
 
 // verifyTreeIntegrity performs additional integrity checks
 func verifyTreeIntegrity[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
+	t.Helper()
+
 	// Verify in-order traversal produces sorted sequence
 	var values []T
 	inOrderTraversal(tree, tree.root, tree.nil, &values)
