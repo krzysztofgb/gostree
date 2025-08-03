@@ -90,6 +90,33 @@ func (t *Tree[T]) Insert(key T) {
 }
 
 // insertFixup maintains red-black tree properties after insertion
+//
+// The function handles violations where a RED node has a RED parent.
+// There are 3 main cases (mirrored for left/right):
+//
+// Case 1: Uncle is RED
+//         G(B)                    G(R)
+//        /   \                  /   \
+//      P(R)   U(R)    =>      P(B)   U(B)
+//      /                      /
+//    N(R)                   N(R)
+//
+// Case 2: Node is inner child (right child of left parent)
+//         G(B)                    G(B)
+//        /   \                  /   \
+//      P(R)   U(B)    =>      N(R)   U(B)
+//        \                    /
+//         N(R)              P(R)
+//
+// Case 3: Node is outer child (left child of left parent)
+//         G(B)                    P(B)
+//        /   \                  /   \
+//      P(R)   U(B)    =>      N(R)   G(R)
+//      /                              \
+//    N(R)                              U(B)
+//
+// Legend: G=Grandparent, P=Parent, N=NewNode, U=Uncle
+//         (R)=RED, (B)=BLACK
 func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 	for newNode.parent.color == RED {
 		parent := newNode.parent
@@ -99,6 +126,11 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 			uncle := grandparent.right
 			if uncle.color == RED {
 				// Case 1: Uncle is RED - recolor and move up
+				//     G(B)                G(R)
+				//    /   \              /   \
+				//  P(R)   U(R)  =>    P(B)   U(B)
+				//  /                  /
+				// N(R)               N(R)
 				parent.color = BLACK
 				uncle.color = BLACK
 				grandparent.color = RED
@@ -106,10 +138,20 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 			} else {
 				if newNode == parent.right {
 					// Case 2: Node is right child - rotate left to convert to case 3
+					//     G(B)              G(B)
+					//    /   \            /   \
+					//  P(R)   U(B)  =>  N(R)   U(B)
+					//    \              /
+					//     N(R)        P(R)
 					newNode = parent
 					t.leftRotate(newNode)
 				}
 				// Case 3: Node is left child - rotate right and recolor
+				//     G(B)              P(B)
+				//    /   \            /   \
+				//  P(R)   U(B)  =>  N(R)   G(R)
+				//  /                        \
+				// N(R)                      U(B)
 				newNode.parent.color = BLACK
 				newNode.parent.parent.color = RED
 				t.rightRotate(newNode.parent.parent)
@@ -119,6 +161,11 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 			uncle := grandparent.left
 			if uncle.color == RED {
 				// Case 1: Uncle is RED - recolor and move up
+				//     G(B)                G(R)
+				//    /   \              /   \
+				//  U(R)   P(R)  =>    U(B)   P(B)
+				//           \                   \
+				//            N(R)                N(R)
 				parent.color = BLACK
 				uncle.color = BLACK
 				grandparent.color = RED
@@ -126,10 +173,20 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 			} else {
 				if newNode == parent.left {
 					// Case 2: Node is left child - rotate right to convert to case 3
+					//     G(B)              G(B)
+					//    /   \            /   \
+					//  U(B)   P(R)  =>  U(B)   N(R)
+					//         /                   \
+					//       N(R)                  P(R)
 					newNode = parent
 					t.rightRotate(newNode)
 				}
 				// Case 3: Node is right child - rotate left and recolor
+				//     G(B)              P(B)
+				//    /   \            /   \
+				//  U(B)   P(R)  =>  G(R)   N(R)
+				//           \       /
+				//            N(R)  U(B)
 				newNode.parent.color = BLACK
 				newNode.parent.parent.color = RED
 				t.leftRotate(newNode.parent.parent)
@@ -140,6 +197,16 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 }
 
 // leftRotate performs a left rotation on the given node
+//
+// Before:         After:
+//    x              y
+//   / \            / \
+//  a   y    =>    x   c
+//     / \        / \
+//    b   c      a   b
+//
+// Where x = node, y = rightChild
+// Parent relationships are updated accordingly
 func (t *Tree[T]) leftRotate(node *Node[T]) {
 	rightChild := node.right
 	node.right = rightChild.left
@@ -163,6 +230,16 @@ func (t *Tree[T]) leftRotate(node *Node[T]) {
 }
 
 // rightRotate performs a right rotation on the given node
+//
+// Before:         After:
+//      y            x
+//     / \          / \
+//    x   c   =>   a   y
+//   / \              / \
+//  a   b            b   c
+//
+// Where y = node, x = leftChild
+// Parent relationships are updated accordingly
 func (t *Tree[T]) rightRotate(node *Node[T]) {
 	leftChild := node.left
 	node.left = leftChild.right
@@ -308,6 +385,16 @@ func (t *Tree[T]) deleteNode(nodeToDelete *Node[T]) {
 }
 
 // transplant replaces subtree rooted at nodeToReplace with subtree rooted at replacement
+//
+// Before:              After:
+//     P                   P
+//     |                   |
+//     U        =>         V
+//    / \                 / \
+//   a   b              (V's subtree)
+//
+// Where P = parent of U, U = nodeToReplace, V = replacement
+// This operation updates parent pointers but preserves V's children
 func (t *Tree[T]) transplant(nodeToReplace, replacement *Node[T]) {
 	if nodeToReplace.parent == t.nil {
 		t.root = replacement
@@ -337,12 +424,53 @@ func (t *Tree[T]) updateSizeUpward(node *Node[T]) {
 }
 
 // deleteFixup maintains red-black tree properties after deletion
+//
+// This function fixes violations when deleting a BLACK node.
+// There are 4 main cases (mirrored for left/right):
+//
+// Case 1: Sibling is RED
+//       P(B)                    S(B)
+//      /   \                  /   \
+//    N(B)   S(R)     =>     P(R)   SR(B)
+//          /   \           /   \
+//        SL(B) SR(B)     N(B)  SL(B)
+//
+// Case 2: Sibling and its children are BLACK
+//       P(?)                    P(?)
+//      /   \                  /   \
+//    N(B)   S(B)     =>     N(B)   S(R)
+//          /   \                  /   \
+//        SL(B) SR(B)            SL(B) SR(B)
+//
+// Case 3: Sibling's far child is BLACK
+//       P(?)                    P(?)
+//      /   \                  /   \
+//    N(B)   S(B)     =>     N(B)  SL(B)
+//          /   \                     \
+//        SL(R) SR(B)                  S(R)
+//                                       \
+//                                      SR(B)
+//
+// Case 4: Sibling's far child is RED
+//       P(?)                    S(?)
+//      /   \                  /   \
+//    N(B)   S(B)     =>     P(B)   SR(B)
+//          /   \           /   \
+//        SL(?) SR(R)     N(B)  SL(?)
+//
+// Legend: P=Parent, N=Node, S=Sibling, SL=Sibling's Left, SR=Sibling's Right
+//         (R)=RED, (B)=BLACK, (?)=Either color
 func (t *Tree[T]) deleteFixup(node *Node[T]) {
 	for node != t.root && node.color == BLACK {
 		if node == node.parent.left {
 			sibling := node.parent.right
 			if sibling.color == RED {
 				// Case 1: Sibling is RED - rotate left and recolor
+				//    P(B)              S(B)
+				//   /   \            /   \
+				// N(B)   S(R)  =>  P(R)   SR(B)
+				//       /   \      /   \
+				//     SL(B) SR(B) N(B) SL(B)
 				sibling.color = BLACK
 				node.parent.color = RED
 				t.leftRotate(node.parent)
@@ -350,17 +478,34 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 			}
 			if sibling.left.color == BLACK && sibling.right.color == BLACK {
 				// Case 2: Sibling's children are both BLACK - recolor sibling
+				//    P(?)              P(?)
+				//   /   \            /   \
+				// N(B)   S(B)  =>  N(B)   S(R)
+				//       /   \            /   \
+				//     SL(B) SR(B)      SL(B) SR(B)
 				sibling.color = RED
 				node = node.parent
 			} else {
 				if sibling.right.color == BLACK {
 					// Case 3: Sibling's right child is BLACK - rotate right and recolor
+					//    P(?)              P(?)
+					//   /   \            /   \
+					// N(B)   S(B)  =>  N(B)  SL(B)
+					//       /   \               \
+					//     SL(R) SR(B)            S(R)
+					//                              \
+					//                             SR(B)
 					sibling.left.color = BLACK
 					sibling.color = RED
 					t.rightRotate(sibling)
 					sibling = node.parent.right
 				}
 				// Case 4: Sibling's right child is RED - rotate left and recolor
+				//    P(?)              S(?)
+				//   /   \            /   \
+				// N(B)   S(B)  =>  P(B)   SR(B)
+				//       /   \      /   \
+				//     SL(?) SR(R) N(B) SL(?)
 				sibling.color = node.parent.color
 				node.parent.color = BLACK
 				sibling.right.color = BLACK
@@ -372,6 +517,11 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 			sibling := node.parent.left
 			if sibling.color == RED {
 				// Case 1: Sibling is RED - rotate right and recolor
+				//       P(B)              S(B)
+				//      /   \            /   \
+				//    S(R)   N(B)  =>  SL(B)  P(R)
+				//   /   \                   /   \
+				// SL(B) SR(B)             SR(B) N(B)
 				sibling.color = BLACK
 				node.parent.color = RED
 				t.rightRotate(node.parent)
@@ -379,17 +529,34 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 			}
 			if sibling.right.color == BLACK && sibling.left.color == BLACK {
 				// Case 2: Sibling's children are both BLACK - recolor sibling
+				//       P(?)              P(?)
+				//      /   \            /   \
+				//    S(B)   N(B)  =>  S(R)   N(B)
+				//   /   \            /   \
+				// SL(B) SR(B)      SL(B) SR(B)
 				sibling.color = RED
 				node = node.parent
 			} else {
 				if sibling.left.color == BLACK {
 					// Case 3: Sibling's left child is BLACK - rotate left and recolor
+					//       P(?)              P(?)
+					//      /   \            /   \
+					//    S(B)   N(B)  =>  SR(B)  N(B)
+					//   /   \            /
+					// SL(B) SR(R)       S(R)
+					//                  /
+					//                SL(B)
 					sibling.right.color = BLACK
 					sibling.color = RED
 					t.leftRotate(sibling)
 					sibling = node.parent.left
 				}
 				// Case 4: Sibling's left child is RED - rotate right and recolor
+				//       P(?)              S(?)
+				//      /   \            /   \
+				//    S(B)   N(B)  =>  SL(B)  P(B)
+				//   /   \                   /   \
+				// SL(R) SR(?)             SR(?) N(B)
 				sibling.color = node.parent.color
 				node.parent.color = BLACK
 				sibling.left.color = BLACK
