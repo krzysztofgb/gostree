@@ -91,15 +91,15 @@ Note, benchmarks for the "Rank" and "Select" methods were omitted for `google/bt
 
 ```text
                                                       │   sec/op    │
-Insert/krzysztofgb/gostree/100_elements-12              3.230µ ± 1%
-Insert/ajwerner/orderstat/100_elements-12               10.45µ ± 2%
-Insert/google/btree/100_elements-12                     13.56µ ± 1%
-Insert/krzysztofgb/gostree/1000_elements-12             52.21µ ± 1%
-Insert/ajwerner/orderstat/1000_elements-12              186.5µ ± 1%
-Insert/google/btree/1000_elements-12                    213.6µ ± 0%
-Insert/krzysztofgb/gostree/10000_elements-12            889.2µ ± 1%
-Insert/ajwerner/orderstat/10000_elements-12             2.660m ± 0%
-Insert/google/btree/10000_elements-12                   2.917m ± 1%
+Insert/krzysztofgb/gostree/100_elements-12              3.847µ ± 1%
+Insert/ajwerner/orderstat/100_elements-12               10.47µ ± 0%
+Insert/google/btree/100_elements-12                     13.58µ ± 1%
+Insert/krzysztofgb/gostree/1000_elements-12             61.71µ ± 1%
+Insert/ajwerner/orderstat/1000_elements-12              186.1µ ± 6%
+Insert/google/btree/1000_elements-12                    213.3µ ± 0%
+Insert/krzysztofgb/gostree/10000_elements-12            999.3µ ± 1%
+Insert/ajwerner/orderstat/10000_elements-12             2.669m ± 0%
+Insert/google/btree/10000_elements-12                   2.903m ± 1%
 
                                                       │      B/op      │
 Insert/krzysztofgb/gostree/100_elements-12              4.734Ki ± 0%
@@ -132,26 +132,26 @@ Insert/google/btree/10000_elements-12                   32.10k ± 0%
 
 ```text
                                                       │   sec/op    │
-Search/krzysztofgb/gostree/100_elements-12              2.634µ ± 0%
-Search/ajwerner/orderstat/100_elements-12               6.465µ ± 1%
-Search/google/btree/100_elements-12                     935.1n ± 1%
-Search/krzysztofgb/gostree/1000_elements-12             3.734µ ± 0%
-Search/ajwerner/orderstat/1000_elements-12              9.991µ ± 0%
-Search/google/btree/1000_elements-12                    8.821µ ± 1%
-Search/krzysztofgb/gostree/10000_elements-12            6.475µ ± 0%
+Search/krzysztofgb/gostree/100_elements-12              3.137µ ± 1%
+Search/ajwerner/orderstat/100_elements-12               6.469µ ± 0%
+Search/google/btree/100_elements-12                     936.2n ± 1%
+Search/krzysztofgb/gostree/1000_elements-12             4.638µ ± 1%
+Search/ajwerner/orderstat/1000_elements-12              10.08µ ± 0%
+Search/google/btree/1000_elements-12                    8.829µ ± 0%
+Search/krzysztofgb/gostree/10000_elements-12            8.021µ ± 0%
 Search/ajwerner/orderstat/10000_elements-12             16.02µ ± 0%
-Search/google/btree/10000_elements-12                   88.76µ ± 0%
+Search/google/btree/10000_elements-12                   88.47µ ± 0%
 
                                                       │      B/op      │
 Search/krzysztofgb/gostree/100_elements-12                0.000 ± 0%
 Search/ajwerner/orderstat/100_elements-12                 647.0 ± 0%
 Search/google/btree/100_elements-12                       984.0 ± 0%
 Search/krzysztofgb/gostree/1000_elements-12               0.000 ± 0%
-Search/ajwerner/orderstat/1000_elements-12                777.0 ± 0%
-Search/google/btree/1000_elements-12                    7.922Ki ± 0%
+Search/ajwerner/orderstat/1000_elements-12                778.0 ± 0%
+Search/google/btree/1000_elements-12                    7.930Ki ± 0%
 Search/krzysztofgb/gostree/10000_elements-12              0.000 ± 0%
-Search/ajwerner/orderstat/10000_elements-12               798.0 ± 0%
-Search/google/btree/10000_elements-12                   78.28Ki ± 0%
+Search/ajwerner/orderstat/10000_elements-12               797.0 ± 0%
+Search/google/btree/10000_elements-12                   78.23Ki ± 0%
 
                                                       │   allocs/op   │
 Search/krzysztofgb/gostree/100_elements-12               0.000 ± 0%
@@ -159,10 +159,10 @@ Search/ajwerner/orderstat/100_elements-12                80.00 ± 1%
 Search/google/btree/100_elements-12                      85.00 ± 0%
 Search/krzysztofgb/gostree/1000_elements-12              0.000 ± 0%
 Search/ajwerner/orderstat/1000_elements-12               97.00 ± 0%
-Search/google/btree/1000_elements-12                     976.0 ± 0%
+Search/google/btree/1000_elements-12                     977.0 ± 0%
 Search/krzysztofgb/gostree/10000_elements-12             0.000 ± 0%
 Search/ajwerner/orderstat/10000_elements-12              99.00 ± 0%
-Search/google/btree/10000_elements-12                   9.982k ± 0%
+Search/google/btree/10000_elements-12                   9.975k ± 0%
 ```
 
 </details>
@@ -173,38 +173,38 @@ Search/google/btree/10000_elements-12                   9.982k ± 0%
 
 ```text
                                                       │   sec/op    │
-Delete/krzysztofgb/gostree/100_elements-12              5.399µ ± 0%
-Delete/ajwerner/orderstat/100_elements-12               29.83µ ± 0%
-Delete/google/btree/100_elements-12                     973.7n ± 1%
-Delete/krzysztofgb/gostree/1000_elements-12             8.271µ ± 1%
-Delete/ajwerner/orderstat/1000_elements-12              49.12µ ± 1%
-Delete/google/btree/1000_elements-12                    9.477µ ± 0%
-Delete/krzysztofgb/gostree/10000_elements-12            15.12µ ± 1%
-Delete/ajwerner/orderstat/10000_elements-12             67.31µ ± 0%
-Delete/google/btree/10000_elements-12                   94.75µ ± 0%
+Delete/krzysztofgb/gostree/100_elements-12              6.092µ ± 0%
+Delete/ajwerner/orderstat/100_elements-12               30.36µ ± 1%
+Delete/google/btree/100_elements-12                     956.2n ± 0%
+Delete/krzysztofgb/gostree/1000_elements-12             9.977µ ± 5%
+Delete/ajwerner/orderstat/1000_elements-12              49.88µ ± 0%
+Delete/google/btree/1000_elements-12                    9.574µ ± 1%
+Delete/krzysztofgb/gostree/10000_elements-12            16.30µ ± 1%
+Delete/ajwerner/orderstat/10000_elements-12             68.71µ ± 0%
+Delete/google/btree/10000_elements-12                   94.88µ ± 1%
 
                                                       │      B/op      │
 Delete/krzysztofgb/gostree/100_elements-12                0.000 ± 0%
-Delete/ajwerner/orderstat/100_elements-12                 620.0 ± 0%
-Delete/google/btree/100_elements-12                       920.0 ± 0%
+Delete/ajwerner/orderstat/100_elements-12                 611.0 ± 0%
+Delete/google/btree/100_elements-12                       912.0 ± 0%
 Delete/krzysztofgb/gostree/1000_elements-12               0.000 ± 0%
-Delete/ajwerner/orderstat/1000_elements-12                778.0 ± 0%
-Delete/google/btree/1000_elements-12                    7.859Ki ± 0%
+Delete/ajwerner/orderstat/1000_elements-12                789.0 ± 0%
+Delete/google/btree/1000_elements-12                    7.969Ki ± 0%
 Delete/krzysztofgb/gostree/10000_elements-12              0.000 ± 0%
 Delete/ajwerner/orderstat/10000_elements-12               799.0 ± 0%
-Delete/google/btree/10000_elements-12                   78.25Ki ± 0%
+Delete/google/btree/10000_elements-12                   78.20Ki ± 0%
 
 
                                                       │   allocs/op   │
 Delete/krzysztofgb/gostree/100_elements-12               0.000 ± 0%
-Delete/ajwerner/orderstat/100_elements-12                77.00 ± 1%
-Delete/google/btree/100_elements-12                      80.00 ± 0%
+Delete/ajwerner/orderstat/100_elements-12                75.00 ± 1%
+Delete/google/btree/100_elements-12                      79.00 ± 0%
 Delete/krzysztofgb/gostree/1000_elements-12              0.000 ± 0%
-Delete/ajwerner/orderstat/1000_elements-12               96.00 ± 0%
-Delete/google/btree/1000_elements-12                     971.0 ± 0%
+Delete/ajwerner/orderstat/1000_elements-12               98.00 ± 0%
+Delete/google/btree/1000_elements-12                     985.0 ± 0%
 Delete/krzysztofgb/gostree/10000_elements-12             0.000 ± 0%
 Delete/ajwerner/orderstat/10000_elements-12              99.00 ± 0%
-Delete/google/btree/10000_elements-12                   9.981k ± 0%
+Delete/google/btree/10000_elements-12                   9.974k ± 0%
 ```
 
 </details>
@@ -215,12 +215,12 @@ Delete/google/btree/10000_elements-12                   9.981k ± 0%
 
 ```text
                                                       │   sec/op    │
-Select/krzysztofgb/gostree/100_elements-12              2.811µ ± 0%
-Select/ajwerner/orderstat/100_elements-12               3.666µ ± 0%
-Select/krzysztofgb/gostree/1000_elements-12             3.783µ ± 1%
-Select/ajwerner/orderstat/1000_elements-12              5.449µ ± 0%
-Select/krzysztofgb/gostree/10000_elements-12            6.829µ ± 1%
-Select/ajwerner/orderstat/10000_elements-12             8.870µ ± 1%
+Select/krzysztofgb/gostree/100_elements-12              2.807µ ± 1%
+Select/ajwerner/orderstat/100_elements-12               3.710µ ± 0%
+Select/krzysztofgb/gostree/1000_elements-12             3.873µ ± 1%
+Select/ajwerner/orderstat/1000_elements-12              5.461µ ± 1%
+Select/krzysztofgb/gostree/10000_elements-12            6.917µ ± 0%
+Select/ajwerner/orderstat/10000_elements-12             8.752µ ± 0%
 
                                                       │      B/op      │
 Select/krzysztofgb/gostree/100_elements-12                0.000 ± 0%
@@ -247,24 +247,24 @@ Select/ajwerner/orderstat/10000_elements-12              0.000 ± 0%
 
 ```text
                                                       │   sec/op    │
-Rank/krzysztofgb/gostree/100_elements-12                2.908µ ± 0%
-Rank/ajwerner/orderstat/100_elements-12                 7.827µ ± 0%
-Rank/krzysztofgb/gostree/1000_elements-12               3.930µ ± 1%
-Rank/ajwerner/orderstat/1000_elements-12                14.07µ ± 0%
-Rank/krzysztofgb/gostree/10000_elements-12              6.542µ ± 1%
-Rank/ajwerner/orderstat/10000_elements-12               22.56µ ± 0%
+Rank/krzysztofgb/gostree/100_elements-12                3.611µ ± 0%
+Rank/ajwerner/orderstat/100_elements-12                 7.936µ ± 0%
+Rank/krzysztofgb/gostree/1000_elements-12               5.093µ ± 0%
+Rank/ajwerner/orderstat/1000_elements-12                14.09µ ± 0%
+Rank/krzysztofgb/gostree/10000_elements-12              9.123µ ± 0%
+Rank/ajwerner/orderstat/10000_elements-12               22.69µ ± 1%
 
                                                       │      B/op      │
 Rank/krzysztofgb/gostree/100_elements-12                  0.000 ± 0%
-Rank/ajwerner/orderstat/100_elements-12                   647.0 ± 0%
+Rank/ajwerner/orderstat/100_elements-12                   551.5 ± 0%
 Rank/krzysztofgb/gostree/1000_elements-12                 0.000 ± 0%
-Rank/ajwerner/orderstat/1000_elements-12                  782.0 ± 0%
+Rank/ajwerner/orderstat/1000_elements-12                  777.0 ± 0%
 Rank/krzysztofgb/gostree/10000_elements-12                0.000 ± 0%
-Rank/ajwerner/orderstat/10000_elements-12                 798.0 ± 0%
+Rank/ajwerner/orderstat/10000_elements-12                 797.0 ± 0%
 
                                                       │   allocs/op   │
 Rank/krzysztofgb/gostree/100_elements-12                 0.000 ± 0%
-Rank/ajwerner/orderstat/100_elements-12                  80.00 ± 1%
+Rank/ajwerner/orderstat/100_elements-12                  68.50 ± 1%
 Rank/krzysztofgb/gostree/1000_elements-12                0.000 ± 0%
 Rank/ajwerner/orderstat/1000_elements-12                 97.00 ± 0%
 Rank/krzysztofgb/gostree/10000_elements-12               0.000 ± 0%
@@ -279,37 +279,37 @@ Rank/ajwerner/orderstat/10000_elements-12                99.00 ± 0%
 
 ```text
                                                       │   sec/op    │
-MixedOperations/krzysztofgb/gostree/100_elements-12     4.942µ ± 2%
-MixedOperations/ajwerner/orderstat/100_elements-12      14.61µ ± 0%
-MixedOperations/google/btree/100_elements-12            9.688µ ± 0%
-MixedOperations/krzysztofgb/gostree/1000_elements-12    6.674µ ± 0%
-MixedOperations/ajwerner/orderstat/1000_elements-12     21.86µ ± 0%
-MixedOperations/google/btree/1000_elements-12           14.32µ ± 7%
-MixedOperations/krzysztofgb/gostree/10000_elements-12   10.68µ ± 0%
-MixedOperations/ajwerner/orderstat/10000_elements-12    34.15µ ± 0%
-MixedOperations/google/btree/10000_elements-12          23.00µ ± 0%
+MixedOperations/krzysztofgb/gostree/100_elements-12     5.488µ ± 0%
+MixedOperations/ajwerner/orderstat/100_elements-12      14.49µ ± 3%
+MixedOperations/google/btree/100_elements-12            9.957µ ± 0%
+MixedOperations/krzysztofgb/gostree/1000_elements-12    7.532µ ± 2%
+MixedOperations/ajwerner/orderstat/1000_elements-12     21.80µ ± 3%
+MixedOperations/google/btree/1000_elements-12           15.24µ ± 1%
+MixedOperations/krzysztofgb/gostree/10000_elements-12   11.73µ ± 1%
+MixedOperations/ajwerner/orderstat/10000_elements-12    33.75µ ± 0%
+MixedOperations/google/btree/10000_elements-12          22.80µ ± 1%
 
                                                       │      B/op      │
 MixedOperations/krzysztofgb/gostree/100_elements-12       960.0 ± 0%
-MixedOperations/ajwerner/orderstat/100_elements-12        452.0 ± 0%
-MixedOperations/google/btree/100_elements-12            2.026Ki ± 0%
+MixedOperations/ajwerner/orderstat/100_elements-12        458.0 ± 0%
+MixedOperations/google/btree/100_elements-12            2.267Ki ± 0%
 MixedOperations/krzysztofgb/gostree/1000_elements-12      960.0 ± 0%
-MixedOperations/ajwerner/orderstat/1000_elements-12       629.0 ± 0%
-MixedOperations/google/btree/1000_elements-12           2.074Ki ± 0%
+MixedOperations/ajwerner/orderstat/1000_elements-12       627.0 ± 0%
+MixedOperations/google/btree/1000_elements-12           3.046Ki ± 0%
 MixedOperations/krzysztofgb/gostree/10000_elements-12     960.0 ± 0%
 MixedOperations/ajwerner/orderstat/10000_elements-12      639.0 ± 0%
-MixedOperations/google/btree/10000_elements-12          2.702Ki ± 0%
+MixedOperations/google/btree/10000_elements-12          2.662Ki ± 0%
 
                                                       │   allocs/op   │
 MixedOperations/krzysztofgb/gostree/100_elements-12      20.00 ± 0%
-MixedOperations/ajwerner/orderstat/100_elements-12       56.00 ± 2%
-MixedOperations/google/btree/100_elements-12             93.00 ± 0%
+MixedOperations/ajwerner/orderstat/100_elements-12       56.00 ± 0%
+MixedOperations/google/btree/100_elements-12             98.00 ± 0%
 MixedOperations/krzysztofgb/gostree/1000_elements-12     20.00 ± 0%
-MixedOperations/ajwerner/orderstat/1000_elements-12      78.00 ± 0%
-MixedOperations/google/btree/1000_elements-12            106.0 ± 0%
+MixedOperations/ajwerner/orderstat/1000_elements-12      77.50 ± 1%
+MixedOperations/google/btree/1000_elements-12            135.0 ± 0%
 MixedOperations/krzysztofgb/gostree/10000_elements-12    20.00 ± 0%
 MixedOperations/ajwerner/orderstat/10000_elements-12     79.00 ± 0%
-MixedOperations/google/btree/10000_elements-12           124.0 ± 0%
+MixedOperations/google/btree/10000_elements-12           123.0 ± 0%
 ```
 
 </details>
