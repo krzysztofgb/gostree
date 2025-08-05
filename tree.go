@@ -7,6 +7,11 @@ const (
 	BLACK Color = true
 )
 
+// CompareFunc defines the comparison function for ordering elements.
+// It should return:
+//   - negative value if a < b
+//   - zero if a == b
+//   - positive value if a > b
 type CompareFunc[T any] func(a, b T) int
 
 type Node[T any] struct {

@@ -1,5 +1,7 @@
 # gostree
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/krzysztofgb/gostree.svg)](https://pkg.go.dev/github.com/krzysztofgb/gostree)
+
 A generic [order-statistic tree](https://en.wikipedia.org/wiki/Order_statistic_tree) tree implementation in Go.
 
 ## Installation
@@ -13,8 +15,10 @@ go get github.com/krzysztofgb/gostree
 ```go
 import "github.com/krzysztofgb/gostree"
 
-// Create a new tree with initial capacity
-tree := gostree.New[int](16)
+// Create a new tree with a comparison function
+tree := gostree.NewTree[int](func(a, b int) int {
+    return a - b
+})
 
 // Insert elements
 tree.Insert(5)
@@ -22,6 +26,9 @@ tree.Insert(3)
 tree.Insert(7)
 tree.Insert(1)
 tree.Insert(9)
+
+// Check if an element exists
+exists := tree.Search(5)  // Returns true
 
 // Get the k-th smallest element (0-indexed)
 val, found := tree.Select(2)  // Returns 5, true (3rd smallest)
@@ -36,28 +43,31 @@ deleted := tree.Delete(3)  // Returns true
 size := tree.Size()  // Returns 4
 ```
 
-## API Reference
+### Custom Types
 
-### Core Methods
+You can use the tree with any type by providing an appropriate comparison function:
 
 ```go
-// New creates a new order-statistic tree with the specified initial capacity
-func New[T cmp.Ordered](capacity int) *Tree[T]
+type Person struct {
+    Name string
+    Age  int
+}
 
-// Insert adds an item to the tree
-func (t *Tree[T]) Insert(item T)
+// Create a tree sorted by age
+tree := gostree.NewTree[Person](func(a, b Person) int {
+    return a.Age - b.Age
+})
 
-// Delete removes an item from the tree, returns true if found and deleted
-func (t *Tree[T]) Delete(item T) bool
-
-// Select returns the k-th smallest element (0-indexed)
-func (t *Tree[T]) Select(k int) (T, bool)
-
-// Rank returns the number of elements less than the given item
-func (t *Tree[T]) Rank(item T) int
-
-// Size returns the number of elements in the tree
-func (t *Tree[T]) Size() int
+// Create a tree sorted by name, then by age
+tree := gostree.NewTree[Person](func(a, b Person) int {
+    if a.Name < b.Name {
+        return -1
+    } else if a.Name > b.Name {
+        return 1
+    }
+    // Names are equal, compare by age
+    return a.Age - b.Age
+})
 ```
 
 ## Concurrency Safety
@@ -69,6 +79,7 @@ The following methods modify the tree structure and require external synchroniza
 
 **Read operations ARE concurrent safe.**
 Multiple goroutines can safely call these methods simultaneously without external synchronization:
+- `Search()`
 - `Select()`
 - `Rank()`
 - `Size()`
