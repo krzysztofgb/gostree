@@ -1,7 +1,6 @@
 package gostree
 
 import (
-	"cmp"
 	"testing"
 )
 
@@ -10,7 +9,7 @@ import (
 // 2. All leaves (NIL nodes) are black.
 // 3. If a red node has children, both children are black (no two reds in a row).
 // 4. Every path from a node to its descendant leaves has the same number of black nodes.
-func checkRedBlackProperties[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
+func checkRedBlackProperties[T any](t *testing.T, tree *Tree[T]) {
 	t.Helper()
 
 	if tree.root != tree.nil && tree.root.color != BLACK {
@@ -23,7 +22,7 @@ func checkRedBlackProperties[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
 	checkBlackHeight(t, tree.root, tree.nil, 0, &blackHeight)
 }
 
-func checkNoRedRedViolation[T cmp.Ordered](t *testing.T, node, sentinel *Node[T]) {
+func checkNoRedRedViolation[T any](t *testing.T, node, sentinel *Node[T]) {
 	t.Helper()
 
 	if node == sentinel {
@@ -43,7 +42,7 @@ func checkNoRedRedViolation[T cmp.Ordered](t *testing.T, node, sentinel *Node[T]
 	checkNoRedRedViolation(t, node.right, sentinel)
 }
 
-func checkBlackHeight[T cmp.Ordered](t *testing.T, node, sentinel *Node[T], currentBlackHeight int, blackHeight *int) {
+func checkBlackHeight[T any](t *testing.T, node, sentinel *Node[T], currentBlackHeight int, blackHeight *int) {
 	t.Helper()
 
 	if node == sentinel {
@@ -64,7 +63,7 @@ func checkBlackHeight[T cmp.Ordered](t *testing.T, node, sentinel *Node[T], curr
 	checkBlackHeight(t, node.right, sentinel, currentBlackHeight, blackHeight)
 }
 
-func verifySizes[T cmp.Ordered](t *testing.T, node, sentinel *Node[T]) int {
+func verifySizes[T any](t *testing.T, node, sentinel *Node[T]) int {
 	t.Helper()
 
 	if node == sentinel {
@@ -84,7 +83,9 @@ func verifySizes[T cmp.Ordered](t *testing.T, node, sentinel *Node[T]) int {
 }
 
 func buildTree(values []int) *Tree[int] {
-	tree := NewTree[int]()
+	tree := NewTree[int](func(a, b int) int {
+		return a - b
+	})
 	for _, v := range values {
 		tree.Insert(v)
 	}
@@ -98,7 +99,7 @@ func TestNewTree(t *testing.T) {
 	t.Run("creates_valid_empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		if tree == nil {
 			t.Fatal("NewTree returned nil")
 		}
@@ -119,7 +120,7 @@ func TestNewTree(t *testing.T) {
 	t.Run("sentinel_is_self_referential", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		if tree.nil.left != tree.nil || tree.nil.right != tree.nil || tree.nil.parent != tree.nil {
 			t.Error("sentinel is not properly self-referential")
 		}
@@ -128,9 +129,25 @@ func TestNewTree(t *testing.T) {
 	t.Run("works_with_different_types", func(t *testing.T) {
 		t.Parallel()
 
-		intTree := NewTree[int]()
-		stringTree := NewTree[string]()
-		floatTree := NewTree[float64]()
+		intTree := NewTree[int](func(a, b int) int { return a - b })
+		stringTree := NewTree[string](func(a, b string) int {
+			if a < b {
+				return -1
+			} else if a > b {
+				return 1
+			}
+
+			return 0
+		})
+		floatTree := NewTree[float64](func(a, b float64) int {
+			if a < b {
+				return -1
+			} else if a > b {
+				return 1
+			}
+
+			return 0
+		})
 
 		trees := []interface{}{intTree, stringTree, floatTree}
 		for i, tree := range trees {
@@ -151,8 +168,8 @@ func TestNewTree(t *testing.T) {
 	t.Run("multiple_trees_are_independent", func(t *testing.T) {
 		t.Parallel()
 
-		tree1 := NewTree[int]()
-		tree2 := NewTree[int]()
+		tree1 := NewTree[int](func(a, b int) int { return a - b })
+		tree2 := NewTree[int](func(a, b int) int { return a - b })
 
 		if tree1 == tree2 || tree1.nil == tree2.nil {
 			t.Error("trees are not independent")
@@ -166,7 +183,7 @@ func TestInsert(t *testing.T) {
 	t.Run("single_element", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		tree.Insert(10)
 
 		if tree.root.key != 10 || tree.root.color != BLACK || tree.root.size != 1 {
@@ -193,7 +210,7 @@ func TestInsert(t *testing.T) {
 	t.Run("updates_sizes_correctly", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		tree.Insert(10)
 		if tree.root.size != 1 {
@@ -249,7 +266,7 @@ func TestInsert(t *testing.T) {
 		t.Parallel()
 
 		values := []int{13, 8, 17, 1, 11, 15, 25, 6, 22, 27}
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		for i, v := range values {
 			tree.Insert(v)
@@ -266,7 +283,7 @@ func TestInsert(t *testing.T) {
 	t.Run("handles_duplicates", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		tree.Insert(10)
 		tree.Insert(10) // duplicate
 		tree.Insert(5)
@@ -284,7 +301,7 @@ func TestSearch(t *testing.T) {
 	t.Run("empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		if tree.Search(10) {
 			t.Error("Search should return false for empty tree")
 		}
@@ -362,7 +379,7 @@ func TestSelect(t *testing.T) {
 	t.Run("empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		testCases := []int{-1, 0, 1}
 		for _, idx := range testCases {
@@ -435,7 +452,7 @@ func TestSelect(t *testing.T) {
 	t.Run("select_with_duplicates", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		for _, v := range []int{5, 3, 7, 3, 5, 7} {
 			tree.Insert(v)
 		}
@@ -457,7 +474,7 @@ func TestRank(t *testing.T) {
 	t.Run("empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		rank := tree.Rank(10)
 		if rank != 0 {
@@ -520,7 +537,7 @@ func TestRank(t *testing.T) {
 	t.Run("rank_with_duplicates", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		for _, v := range []int{5, 3, 7, 3, 5, 7} {
 			tree.Insert(v)
 		}
@@ -581,7 +598,7 @@ func TestDelete(t *testing.T) {
 	t.Run("empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		if tree.Delete(10) {
 			t.Error("Delete should return false for empty tree")
@@ -762,7 +779,7 @@ func TestSize(t *testing.T) {
 	t.Run("empty_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		if size := tree.Size(); size != 0 {
 			t.Errorf("Size() = %d, want 0 for empty tree", size)
 		}
@@ -771,7 +788,7 @@ func TestSize(t *testing.T) {
 	t.Run("single_element", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		tree.Insert(42)
 		if size := tree.Size(); size != 1 {
 			t.Errorf("Size() = %d, want 1", size)
@@ -781,7 +798,7 @@ func TestSize(t *testing.T) {
 	t.Run("multiple_elements", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		elements := []int{10, 5, 15, 3, 7, 12, 17}
 
 		for i, v := range elements {
@@ -796,7 +813,7 @@ func TestSize(t *testing.T) {
 	t.Run("with_duplicates", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		elements := []int{5, 3, 7, 3, 5, 7, 3}
 
 		for i, v := range elements {
@@ -850,7 +867,7 @@ func TestSize(t *testing.T) {
 	t.Run("large_tree", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		n := 1000
 
 		for i := 0; i < n; i++ {
@@ -894,7 +911,7 @@ func TestIntegration(t *testing.T) {
 	t.Run("large_dataset_operations", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 		n := 1000
 
 		for i := 0; i < n; i += 2 {
@@ -931,7 +948,7 @@ func TestIntegration(t *testing.T) {
 	t.Run("stress_test_all_operations", func(t *testing.T) {
 		t.Parallel()
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		// Insert 100 random-ish values
 		values := make([]int, 100)

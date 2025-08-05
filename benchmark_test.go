@@ -52,7 +52,7 @@ func BenchmarkInsert(b *testing.B) {
 		b.Run("krzysztofgb/gostree/"+bm.name, func(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				tree := NewTree[int]()
+				tree := NewTree[int](func(a, b int) int { return a - b })
 				for _, v := range data {
 					tree.Insert(v)
 				}
@@ -95,7 +95,7 @@ func BenchmarkSearch(b *testing.B) {
 		data := generateRandomData(bm.size)
 
 		// Setup gostree
-		gostreeTree := NewTree[int]()
+		gostreeTree := NewTree[int](func(a, b int) int { return a - b })
 		for _, v := range data {
 			gostreeTree.Insert(v)
 		}
@@ -150,7 +150,7 @@ func BenchmarkSelect(b *testing.B) {
 		data := generateRandomData(bm.size)
 
 		// Setup gostree
-		gostreeTree := NewTree[int]()
+		gostreeTree := NewTree[int](func(a, b int) int { return a - b })
 		for _, v := range data {
 			gostreeTree.Insert(v)
 		}
@@ -198,7 +198,7 @@ func BenchmarkDelete(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				b.StopTimer()
-				tree := NewTree[int]()
+				tree := NewTree[int](func(a, b int) int { return a - b })
 				for _, v := range data {
 					tree.Insert(v)
 				}
@@ -252,7 +252,7 @@ func BenchmarkRank(b *testing.B) {
 		data := generateRandomData(bm.size)
 
 		// Setup gostree
-		gostreeTree := NewTree[int]()
+		gostreeTree := NewTree[int](func(a, b int) int { return a - b })
 		for _, v := range data {
 			gostreeTree.Insert(v)
 		}
@@ -300,7 +300,7 @@ func BenchmarkMixedOperations(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				b.StopTimer()
-				tree := NewTree[int]()
+				tree := NewTree[int](func(a, b int) int { return a - b })
 				// Pre-populate with initial data
 				for _, v := range data[:bm.size/2] {
 					tree.Insert(v)

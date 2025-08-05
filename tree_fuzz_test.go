@@ -1,7 +1,6 @@
 package gostree
 
 import (
-	"cmp"
 	"testing"
 )
 
@@ -33,7 +32,7 @@ func FuzzTree(f *testing.F) {
 			return
 		}
 
-		tree := NewTree[int]()
+		tree := NewTree[int](func(a, b int) int { return a - b })
 
 		// Track what we've inserted for validation
 		elements := make(map[int]int) // value -> count
@@ -96,13 +95,13 @@ func FuzzTree(f *testing.F) {
 					// Verify that elem is at position k by checking elements before and after
 					if k > 0 {
 						prevElem, _ := tree.Select(k - 1)
-						if prevElem > elem {
+						if tree.compare(prevElem, elem) > 0 {
 							t.Fatalf("Select returned wrong order: Select(%d)=%d > Select(%d)=%d", k-1, prevElem, k, elem)
 						}
 					}
 					if k < tree.Size()-1 {
 						nextElem, _ := tree.Select(k + 1)
-						if nextElem < elem {
+						if tree.compare(nextElem, elem) < 0 {
 							t.Fatalf("Select returned wrong order: Select(%d)=%d < Select(%d)=%d", k, elem, k+1, nextElem)
 						}
 					}
@@ -116,7 +115,7 @@ func FuzzTree(f *testing.F) {
 				// If the value exists, verify we can select it back
 				if tree.Search(value) {
 					elem, ok := tree.Select(rank)
-					if !ok || elem > value {
+					if !ok || tree.compare(elem, value) > 0 {
 						t.Fatalf("Rank/Select mismatch: Rank(%d)=%d, but Select(%d)=%d", value, rank, rank, elem)
 					}
 				}
@@ -136,7 +135,7 @@ func FuzzTree(f *testing.F) {
 }
 
 // verifyOrderStatisticProperties checks that size fields are correct
-func verifyOrderStatisticProperties[T cmp.Ordered](t *testing.T, tree *Tree[T], elements map[int]int) {
+func verifyOrderStatisticProperties[T any](t *testing.T, tree *Tree[T], elements map[int]int) {
 	t.Helper()
 
 	totalCount := 0
@@ -152,7 +151,7 @@ func verifyOrderStatisticProperties[T cmp.Ordered](t *testing.T, tree *Tree[T], 
 }
 
 // verifySizeFields recursively verifies that size fields are correct
-func verifySizeFields[T cmp.Ordered](t *testing.T, tree *Tree[T], node, nil *Node[T]) int {
+func verifySizeFields[T any](t *testing.T, tree *Tree[T], node, nil *Node[T]) int {
 	t.Helper()
 
 	if node == nil {
@@ -171,7 +170,7 @@ func verifySizeFields[T cmp.Ordered](t *testing.T, tree *Tree[T], node, nil *Nod
 }
 
 // verifyTreeIntegrity performs additional integrity checks
-func verifyTreeIntegrity[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
+func verifyTreeIntegrity[T any](t *testing.T, tree *Tree[T]) {
 	t.Helper()
 
 	// Verify in-order traversal produces sorted sequence
@@ -179,7 +178,7 @@ func verifyTreeIntegrity[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
 	inOrderTraversal(tree, tree.root, tree.nil, &values)
 
 	for i := 1; i < len(values); i++ {
-		if values[i] < values[i-1] {
+		if tree.compare(values[i], values[i-1]) < 0 {
 			t.Fatalf("Tree not in sorted order: %v < %v at positions %d, %d", values[i], values[i-1], i, i-1)
 		}
 	}
@@ -190,14 +189,14 @@ func verifyTreeIntegrity[T cmp.Ordered](t *testing.T, tree *Tree[T]) {
 		if !ok {
 			t.Fatalf("Select(%d) failed", i)
 		}
-		if i < len(values) && elem != values[i] {
+		if i < len(values) && tree.compare(elem, values[i]) != 0 {
 			t.Fatalf("Select(%d) returned %v, expected %v", i, elem, values[i])
 		}
 	}
 }
 
 // inOrderTraversal performs in-order traversal
-func inOrderTraversal[T cmp.Ordered](tree *Tree[T], node, nil *Node[T], values *[]T) {
+func inOrderTraversal[T any](tree *Tree[T], node, nil *Node[T], values *[]T) {
 	if node == nil {
 		return
 	}

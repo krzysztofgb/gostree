@@ -1,7 +1,5 @@
 package gostree
 
-import "cmp"
-
 type Color bool
 
 const (
@@ -9,7 +7,9 @@ const (
 	BLACK Color = true
 )
 
-type Node[T cmp.Ordered] struct {
+type CompareFunc[T any] func(a, b T) int
+
+type Node[T any] struct {
 	key    T
 	left   *Node[T]
 	right  *Node[T]
@@ -18,15 +18,17 @@ type Node[T cmp.Ordered] struct {
 	size   int // number of nodes in subtree rooted at this node
 }
 
-type Tree[T cmp.Ordered] struct {
-	root *Node[T]
-	nil  *Node[T] // sentinel node
+type Tree[T any] struct {
+	root    *Node[T]
+	nil     *Node[T] // sentinel node
+	compare CompareFunc[T]
 }
 
 // NewTree creates a new order-statistic tree.
-func NewTree[T cmp.Ordered]() *Tree[T] {
+func NewTree[T any](compare CompareFunc[T]) *Tree[T] {
 	t := &Tree[T]{
-		root: nil,
+		root:    nil,
+		compare: compare,
 		nil: &Node[T]{ // sentinel node
 			key:    *new(T),
 			left:   nil,
@@ -68,7 +70,7 @@ func (t *Tree[T]) Insert(key T) {
 		parent = current
 		// Update size on the path down
 		current.size++
-		if key < current.key {
+		if t.compare(key, current.key) < 0 {
 			current = current.left
 		} else {
 			current = current.right
@@ -79,7 +81,7 @@ func (t *Tree[T]) Insert(key T) {
 	newNode.parent = parent
 	if parent == t.nil {
 		t.root = newNode
-	} else if newNode.key < parent.key {
+	} else if t.compare(newNode.key, parent.key) < 0 {
 		parent.left = newNode
 	} else {
 		parent.right = newNode
@@ -274,8 +276,11 @@ func (t *Tree[T]) Search(key T) bool {
 
 func (t *Tree[T]) search(key T) *Node[T] {
 	current := t.root
-	for current != t.nil && key != current.key {
-		if key < current.key {
+	for current != t.nil {
+		cmp := t.compare(key, current.key)
+		if cmp == 0 {
+			break
+		} else if cmp < 0 {
 			current = current.left
 		} else {
 			current = current.right
@@ -320,7 +325,7 @@ func (t *Tree[T]) Rank(key T) int {
 	current := t.root
 
 	for current != t.nil {
-		if key <= current.key {
+		if t.compare(key, current.key) <= 0 {
 			// Key is less than or equal, go left
 			current = current.left
 		} else {
