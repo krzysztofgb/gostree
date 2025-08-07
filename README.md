@@ -1,3 +1,9 @@
+<p align="center">
+    <img src="./assets/gostree.png" style="border-radius: 20%" alt="gostree logo"/>
+</p>
+
+---
+
 # gostree
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/krzysztofgb/gostree.svg)](https://pkg.go.dev/github.com/krzysztofgb/gostree)
