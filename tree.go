@@ -29,6 +29,50 @@ type Tree[T any] struct {
 	compare CompareFunc[T]
 }
 
+// getGrandparent returns the grandparent of the node
+func (t *Tree[T]) getGrandparent(n *Node[T]) *Node[T] {
+	if n.parent != t.nil {
+		return n.parent.parent
+	}
+
+	return t.nil
+}
+
+// getSibling returns the sibling of the node
+func (t *Tree[T]) getSibling(n *Node[T]) *Node[T] {
+	if n.parent == t.nil {
+		return t.nil
+	}
+	if n == n.parent.left {
+		return n.parent.right
+	}
+
+	return n.parent.left
+}
+
+// getUncle returns the uncle (parent's sibling) of the node
+func (t *Tree[T]) getUncle(n *Node[T]) *Node[T] {
+	grandparent := t.getGrandparent(n)
+	if grandparent == t.nil {
+		return t.nil
+	}
+	if n.parent.isLeftChild() {
+		return grandparent.right
+	}
+
+	return grandparent.left
+}
+
+// isLeftChild returns true if the node is a left child
+func (n *Node[T]) isLeftChild() bool {
+	return n.parent != nil && n == n.parent.left
+}
+
+// isRightChild returns true if the node is a right child
+func (n *Node[T]) isRightChild() bool {
+	return n.parent != nil && n == n.parent.right
+}
+
 // NewTree creates a new order-statistic tree.
 func NewTree[T any](compare CompareFunc[T]) *Tree[T] {
 	t := &Tree[T]{
@@ -129,10 +173,10 @@ func (t *Tree[T]) Insert(key T) {
 func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 	for newNode.parent.color == RED {
 		parent := newNode.parent
-		grandparent := parent.parent
+		grandparent := t.getGrandparent(newNode)
 
-		if parent == grandparent.left {
-			uncle := grandparent.right
+		if parent.isLeftChild() {
+			uncle := t.getUncle(newNode)
 			if uncle.color == RED {
 				// Case 1: Uncle is RED - recolor and move up
 				//     G(B)                G(R)
@@ -145,7 +189,7 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 				grandparent.color = RED
 				newNode = grandparent
 			} else {
-				if newNode == parent.right {
+				if newNode.isRightChild() {
 					// Case 2: Node is right child - rotate left to convert to case 3
 					//     G(B)              G(B)
 					//    /   \            /   \
@@ -162,12 +206,12 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 				//  /                        \
 				// N(R)                      U(B)
 				newNode.parent.color = BLACK
-				newNode.parent.parent.color = RED
-				t.rightRotate(newNode.parent.parent)
+				grandparent.color = RED
+				t.rightRotate(grandparent)
 			}
 		} else {
 			// Mirror cases: parent is right child of grandparent
-			uncle := grandparent.left
+			uncle := t.getUncle(newNode)
 			if uncle.color == RED {
 				// Case 1: Uncle is RED - recolor and move up
 				//     G(B)                G(R)
@@ -180,7 +224,7 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 				grandparent.color = RED
 				newNode = grandparent
 			} else {
-				if newNode == parent.left {
+				if newNode.isLeftChild() {
 					// Case 2: Node is left child - rotate right to convert to case 3
 					//     G(B)              G(B)
 					//    /   \            /   \
@@ -197,8 +241,8 @@ func (t *Tree[T]) insertFixup(newNode *Node[T]) {
 				//           \       /
 				//            N(R)  U(B)
 				newNode.parent.color = BLACK
-				newNode.parent.parent.color = RED
-				t.leftRotate(newNode.parent.parent)
+				grandparent.color = RED
+				t.leftRotate(grandparent)
 			}
 		}
 	}
@@ -226,7 +270,7 @@ func (t *Tree[T]) leftRotate(node *Node[T]) {
 	rightChild.parent = node.parent
 	if node.parent == t.nil {
 		t.root = rightChild
-	} else if node == node.parent.left {
+	} else if node.isLeftChild() {
 		node.parent.left = rightChild
 	} else {
 		node.parent.right = rightChild
@@ -260,7 +304,7 @@ func (t *Tree[T]) rightRotate(node *Node[T]) {
 	leftChild.parent = node.parent
 	if node.parent == t.nil {
 		t.root = leftChild
-	} else if node == node.parent.right {
+	} else if node.isRightChild() {
 		node.parent.right = leftChild
 	} else {
 		node.parent.left = leftChild
@@ -411,7 +455,7 @@ func (t *Tree[T]) deleteNode(nodeToDelete *Node[T]) {
 func (t *Tree[T]) transplant(nodeToReplace, replacement *Node[T]) {
 	if nodeToReplace.parent == t.nil {
 		t.root = replacement
-	} else if nodeToReplace == nodeToReplace.parent.left {
+	} else if nodeToReplace.isLeftChild() {
 		nodeToReplace.parent.left = replacement
 	} else {
 		nodeToReplace.parent.right = replacement
@@ -478,8 +522,8 @@ func (t *Tree[T]) updateSizeUpward(node *Node[T]) {
 // Legend: P=Parent, N=Node, S=Sibling, SL=Sibling's Left, SR=Sibling's Right, (R)=RED, (B)=BLACK, (?)=Either color
 func (t *Tree[T]) deleteFixup(node *Node[T]) {
 	for node != t.root && node.color == BLACK {
-		if node == node.parent.left {
-			sibling := node.parent.right
+		if node.isLeftChild() {
+			sibling := t.getSibling(node)
 			if sibling.color == RED {
 				// Case 1: Sibling is RED - rotate left and recolor
 				//    P(B)              S(B)
@@ -490,7 +534,7 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 				sibling.color = BLACK
 				node.parent.color = RED
 				t.leftRotate(node.parent)
-				sibling = node.parent.right
+				sibling = t.getSibling(node)
 			}
 			if sibling.left.color == BLACK && sibling.right.color == BLACK {
 				// Case 2: Sibling's children are both BLACK - recolor sibling
@@ -514,7 +558,7 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 					sibling.left.color = BLACK
 					sibling.color = RED
 					t.rightRotate(sibling)
-					sibling = node.parent.right
+					sibling = t.getSibling(node)
 				}
 				// Case 4: Sibling's right child is RED - rotate left and recolor
 				//    P(?)              S(?)
@@ -530,7 +574,7 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 			}
 		} else {
 			// Mirror cases: node is right child
-			sibling := node.parent.left
+			sibling := t.getSibling(node)
 			if sibling.color == RED {
 				// Case 1: Sibling is RED - rotate right and recolor
 				//       P(B)              S(B)
@@ -541,7 +585,7 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 				sibling.color = BLACK
 				node.parent.color = RED
 				t.rightRotate(node.parent)
-				sibling = node.parent.left
+				sibling = t.getSibling(node)
 			}
 			if sibling.right.color == BLACK && sibling.left.color == BLACK {
 				// Case 2: Sibling's children are both BLACK - recolor sibling
@@ -565,7 +609,7 @@ func (t *Tree[T]) deleteFixup(node *Node[T]) {
 					sibling.right.color = BLACK
 					sibling.color = RED
 					t.leftRotate(sibling)
-					sibling = node.parent.left
+					sibling = t.getSibling(node)
 				}
 				// Case 4: Sibling's left child is RED - rotate right and recolor
 				//       P(?)              S(?)
