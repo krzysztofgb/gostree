@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./assets/gostree.png" alt="gostree logo" height="50%" width="25%" />
+    <img src="./assets/gostree.png" alt="gostree logo" height="50%" width="50%" />
 </p>
 
 ---
